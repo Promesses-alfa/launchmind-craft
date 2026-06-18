@@ -1,0 +1,114 @@
+{# Control-panel settings for the Launchmind Blog plugin. #}
+{% import "_includes/forms.twig" as forms %}
+
+{{ forms.autosuggestField({
+    label: 'API key'|t('launchmind-blog'),
+    instructions: 'Your Launchmind API key (starts with `lm_`). Find it in your Launchmind dashboard under Settings → Connectors. Supports environment variables.'|t('launchmind-blog'),
+    id: 'apiKey',
+    name: 'apiKey',
+    suggestEnvVars: true,
+    value: settings.apiKey,
+    errors: settings.getErrors('apiKey'),
+    required: true,
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'API base URL'|t('launchmind-blog'),
+    instructions: 'Leave as the default unless instructed otherwise.'|t('launchmind-blog'),
+    id: 'apiBase',
+    name: 'apiBase',
+    suggestEnvVars: true,
+    value: settings.apiBase,
+    errors: settings.getErrors('apiBase'),
+    required: true,
+}) }}
+
+{{ forms.textField({
+    label: 'Blog path'|t('launchmind-blog'),
+    instructions: 'The front-end path the blog renders at. `blog` serves the list at /blog and articles at /blog/&lt;slug&gt;.'|t('launchmind-blog'),
+    id: 'blogPath',
+    name: 'blogPath',
+    value: settings.blogPath,
+    errors: settings.getErrors('blogPath'),
+    required: true,
+}) }}
+
+{{ forms.selectField({
+    label: 'Language'|t('launchmind-blog'),
+    instructions: 'Which language to request from Launchmind. Auto follows the current site language.'|t('launchmind-blog'),
+    id: 'language',
+    name: 'language',
+    value: settings.language,
+    options: [
+        { label: 'Auto (site language)'|t('launchmind-blog'), value: '' },
+        { label: 'English', value: 'en' },
+        { label: 'Nederlands', value: 'nl' },
+        { label: 'Deutsch', value: 'de' },
+        { label: 'Français', value: 'fr' },
+        { label: 'Español', value: 'es' },
+        { label: 'Italiano', value: 'it' },
+        { label: 'हिन्दी', value: 'hi' },
+        { label: 'Polski', value: 'pl' },
+    ],
+}) }}
+
+{{ forms.textField({
+    label: 'Cache TTL (seconds)'|t('launchmind-blog'),
+    instructions: 'How long fetched content is treated as fresh. Minimum 60. Default 600 (10 minutes).'|t('launchmind-blog'),
+    id: 'cacheTtl',
+    name: 'cacheTtl',
+    type: 'number',
+    value: settings.cacheTtl,
+    errors: settings.getErrors('cacheTtl'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Enable analytics'|t('launchmind-blog'),
+    instructions: 'Sends an anonymous server-side page-view beacon on article renders so Launchmind can report blog performance back to you.'|t('launchmind-blog'),
+    id: 'enableTracking',
+    name: 'enableTracking',
+    on: settings.enableTracking,
+}) }}
+
+<hr>
+
+<div class="buttons">
+    <button type="button" class="btn" id="lm-test-connection">{{ 'Test connection'|t('launchmind-blog') }}</button>
+    <button type="button" class="btn" id="lm-clear-cache">{{ 'Clear cache'|t('launchmind-blog') }}</button>
+    <span class="spinner hidden" id="lm-spinner"></span>
+    <span id="lm-result" style="margin-left:8px;"></span>
+</div>
+
+{% js %}
+(function() {
+    var resultEl = document.getElementById('lm-result');
+    var spinner = document.getElementById('lm-spinner');
+
+    function run(action, method) {
+        resultEl.textContent = '';
+        resultEl.style.color = '';
+        spinner.classList.remove('hidden');
+        Craft.sendActionRequest(method, action)
+            .then(function(response) {
+                var data = response.data || {};
+                resultEl.style.color = data.success ? '#27ab83' : '#cf1124';
+                resultEl.textContent = data.message || '';
+            })
+            .catch(function(error) {
+                var data = (error.response && error.response.data) || {};
+                resultEl.style.color = '#cf1124';
+                resultEl.textContent = data.message || Craft.t('launchmind-blog', 'Request failed.');
+            })
+            .finally(function() {
+                spinner.classList.add('hidden');
+            });
+    }
+
+    document.getElementById('lm-test-connection').addEventListener('click', function() {
+        run('launchmind-blog/settings/test-connection', 'POST');
+    });
+    document.getElementById('lm-clear-cache').addEventListener('click', function() {
+        run('launchmind-blog/settings/clear-cache', 'POST');
+    });
+})();
+{% endjs %}

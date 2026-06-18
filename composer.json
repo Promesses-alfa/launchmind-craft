@@ -1,0 +1,39 @@
+{
+    "name": "launchmind/craft-launchmind-blog",
+    "description": "Publish your Launchmind AI-generated SEO & GEO blog on your Craft CMS site.",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "support": {
+        "email": "hello@launchmind.io",
+        "docs": "https://launchmind.io/docs/craft"
+    },
+    "require": {
+        "php": ">=8.2",
+        "craftcms/cms": "^5.0.0"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "launchmind\\blog\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "launchmind-blog",
+        "name": "Launchmind Blog",
+        "developer": "Launchmind",
+        "developerUrl": "https://launchmind.io",
+        "documentationUrl": "https://launchmind.io/docs/craft",
+        "class": "launchmind\\blog\\Plugin",
+        "hasCpSettings": true,
+        "hasCpSection": false
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}
