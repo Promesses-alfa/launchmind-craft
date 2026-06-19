@@ -1,5 +1,14 @@
 # Release Notes for Launchmind Blog
 
+## 1.0.2
+
+- Use the official Craft License text in `LICENSE.md` (Plugin Store requirement).
+- Renamed the plugin back to "Launchmind Blog".
+
+## 1.0.1
+
+- Renamed the plugin to "Launchmind AI SEO GEO content".
+
 ## 1.0.0
 
 - Initial release.
